@@ -1,0 +1,13 @@
+flask
+authlib
+requests
+python-dotenv
+# pytest
+flask-restful
+flask_sqlalchemy
+sqlalchemy
+psycopg2-binary
+flask_session
+flask-caching
+flask-cors
+flask-migrate
