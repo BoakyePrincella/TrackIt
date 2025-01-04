@@ -11,9 +11,19 @@
 
 <body class="bg-indigo-600">
     {% include 'components/sidebar.html' %}
-    <div class="ml-[310px]">
-        {% block content%}{% endblock%}
+    {% include 'components/greeting.html' %}
+    <div class="ml-[310px]" id="dynamic-content">
+        {% if content_template %}
+            {% include content_template %}
+        {% else %}
+            {% block content %}{% endblock %}
+        {% endif %}
     </div>
+
+    <div id="loader" class="hidden fixed inset-0 items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="text-white text-lg">Loading...</div>
+    </div>
+
     <script src="{{url_for('user_bp.static', filename='main.js')}}"></script>
 </body>
 

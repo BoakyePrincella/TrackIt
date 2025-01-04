@@ -8,12 +8,27 @@ user_blueprint = Blueprint('user_bp', __name__, template_folder='templates', sta
 
 @user_blueprint.route('/')
 def index():
-    return render_template('users/index.html')
+    return render_template('users/base.html')
+
+@user_blueprint.route('/home')
+def home():
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('users/home.html')  
+    return render_template('users/base.html', content_template='users/home.html')
 
 @user_blueprint.route('/tasks')
 def tasks():
-    return "Tasks here"
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('users/tasks.html')
+    return render_template('users/base.html')
 
 @user_blueprint.route('/time-tracker')
 def time_tracker():
-    return "Time tracker here"
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render_template('users/time_tracker.html')
+    return render_template('users/base.html', content_template='users/time_tracker.html')
+
+
+@user_blueprint.route('/logout')
+def logout():
+    return "Logout here"
