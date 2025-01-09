@@ -36,9 +36,9 @@ def new_user():
     
     except IntegrityError as e:
         return jsonify({"Error": str(e.orig)})
-        if 'users_email_key' in str(e.orig):
-            return jsonify({"error": "Email already exists"}), 400
-        elif 'users_username_key' in str(e.orig):
-            return jsonify({"error": "Username already exists"}), 400
-        else:
-            return jsonify({"error": "An error occurred while creating the user"}), 500
+        # if 'users_email_key' in str(e.orig):
+        #     return jsonify({"error": "Email already exists"}), 400
+        # elif 'users_username_key' in str(e.orig):
+        #     return jsonify({"error": "Username already exists"}), 400
+        # else:
+        #     return jsonify({"error": "An error occurred while creating the user"}), 500

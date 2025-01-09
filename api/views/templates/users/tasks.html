@@ -1,4 +1,26 @@
-
 {% block content %}
-<p>Tasks</p>
+<p class="text-3xl mx-2 my-3 uppercase">Tasks</p>
+
+{% if data %}
+<table class="min-w-[90%] table-auto border-collapse">
+    <thead>
+        <tr>
+            <th class="px-4 py-2 border-b text-left">Title</th>
+            <th class="px-4 py-2 border-b text-left">Description</th>
+            <th class="px-4 py-2 border-b text-left">Date Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in data %}
+        <tr class="hover:bg-gray-500 hover:text-gray-50">
+            <td class="px-4 py-2 border-b">{{ task.title }}</td>
+            <td class="px-4 py-2 border-b">{{ task.description }}</td>
+            <td class="px-4 py-2 border-b">{{ task.date_created }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% elif msg %}
+<p class="text-red-500">{{ msg }}</p>
+{% endif %}
 {% endblock content %}

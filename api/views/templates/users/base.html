@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" />
     <title>TrackIt</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="icon" src="{{ url_for('static', filename='imgs/logo-100x100.png') }}" alt="trackit_logo">
+
 </head>
 
-<body class="bg-indigo-600">
+<body class="bg-indigo-500">
     {% include 'components/sidebar.html' %}
     {% include 'components/greeting.html' %}
-    <div class="ml-[310px]" id="dynamic-content">
+    <div class="ml-[310px] mt-[90px]" id="dynamic-content">
         {% if content_template %}
             {% include content_template %}
         {% else %}
