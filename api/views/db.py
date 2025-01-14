@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Text, DateTime
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Text, DateTime, Time
 from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import relationship
@@ -49,4 +49,21 @@ class Tasks(db.Model):
             'title': self.title,
             'description': self.description,
             "date_created": format_datetime(self.date_created)
+        }
+
+class Activities(db.Model):
+    '''the activities table'''
+    __tablename__ = 'activities'
+    act_id = Column(Integer, primary_key=True, autoincrement=True)
+    userid = Column(Integer, ForeignKey('users.userid'))
+    act_name = Column(String(255))
+    duration = Column(Time)
+    date = Column(DateTime, default=datetime.now())
+    
+    def to_dict(self):
+        return {
+            'userid': self.userid,
+            'actiivity': self.act_name,
+            'duration': self.duration.strftime('%H:%M:%S'),
+            'date': format_datetime(self.date)
         }

@@ -3,6 +3,7 @@ import requests
 import json
 import os
 from sqlalchemy.exc import OperationalError
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -30,7 +31,7 @@ def signin():
         password = form_data.get("password")
 
         if not username or not password:
-            error = "Username and password are required."
+            error = "Userna`me and password are required."
             return render_template("users/auth/signin.html", error=error)
 
         try:
@@ -112,30 +113,97 @@ def home():
 @user_blueprint.route('/tasks')
 def tasks():
     userid = session.get('user', {}).get('user_id')
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    if userid:
         url = f"{os.getenv('API_URL')}/tasks/{userid}"
         response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            return render_template('users/tasks.html', data=data)
-        msg = 'No data yet'
-        return render_template('users/tasks.html/', msg=msg)
-    else:
-        url = f"{os.getenv('API_URL')}/tasks/{userid}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            
-            return render_template('users/base.html', content_template='users/tasks.html', data=data)
-        msg = 'No data yet'
-        return render_template('users/base.html/', content_template='users/tasks.html', msg=msg)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            if response.status_code == 200:
+                data = response.json()
+                return render_template('users/tasks.html', data=data)
+            msg = 'No data yet'
+            return render_template('users/tasks.html/', msg=msg)
+        else:
+            if response.status_code == 200:
+                data = response.json()   
+                return render_template('users/base.html', content_template='users/tasks.html', data=data)
+            msg = 'No data yet'
+            return render_template('users/base.html/', content_template='users/tasks.html', msg=msg)
+    return redirect(url_for("user_bp.signin"))
+
         # return render_template('users/base.html')
 
 @user_blueprint.route('/time-tracker')
 def time_tracker():
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render_template('users/time_tracker.html')
-    return render_template('users/base.html', content_template='users/time_tracker.html')
+    userid = session.get('user', {}).get('user_id')
+    if userid:
+        act_url = f"{os.getenv('API_URL')}/activities/{userid}"
+        response = requests.get(act_url)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            if response.status_code == 200:
+                data = response.json()
+            return render_template('users/time_tracker.html', tracker_history=data)
+        else:
+            if response.status_code == 200:
+                data = response.json()
+            return render_template('users/base.html', content_template='users/time_tracker.html', tracker_history=data)
+    return redirect(url_for("user_bp.signin"))
+
+
+@user_blueprint.route('/start-task', methods=['POST'])
+def start_task():
+    form_data = request.form
+    task = form_data.get('task_name')
+    start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return jsonify({"message": f"Activity - {task} started", "start_time": start_time, "activity": f"{task}" })
+
+@user_blueprint.route('/stop-task', methods=['POST'])
+def stop_task():
+    data = request.get_json()
+    elapsed_time = data.get('elapsed_time')
+    # Here, you would typically save the elapsed_time to the database.
+    return jsonify({"message": f"Activity stopped. Total elapsed time: {elapsed_time} seconds",})
+
+@user_blueprint.route('/save-task', methods=['POST'])
+def save_task():
+    from api.views.db import Activities
+    from app import db
+    data = request.get_json()
+    elapsed_time = data.get('elapsed_time')
+    activity = data.get('activity')
+    user = data.get('user')
+
+    if user:
+        if elapsed_time and activity:
+            try:
+                new_activity = Activities(userid=user, act_name=activity, duration=elapsed_time)
+                db.session.add(new_activity)
+                db.session.commit()
+                return jsonify({"message": f"Activity saved. {activity} - Total elapsed time: {elapsed_time} seconds by user {user}"})
+            except OperationalError:
+                    return render_template("error.html", message="Unable to connect to the server, Please check your network connection and try again")
+        return jsonify({"Error": "Time and activity needed"})
+    return redirect(url_for("user_bp.signin"))
+    # Here, you would typically save the elapsed_time to the database.
+
+# @user_blueprint.route('/activities')
+# def activities():
+#     userid = session.get('user', {}).get('user_id')
+#     if userid:
+#         url = f"{os.getenv('API_URL')}/activities/{userid}"
+#         response = requests.get(url)
+#         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#             if response.status_code == 200:
+#                 data = response.json()
+#                 return render_template('users/time_tracker.html', tracker_history=data)
+#             msg = 'No data yet'
+#             return render_template('users/time_tracker.html/', tracker_msg=msg)
+#         else:
+#             if response.status_code == 200:
+#                 data = response.json()   
+#                 return render_template('users/base.html', content_template='users/time_tracker.html', tracker_history=data)
+#             msg = 'No data yet'
+#             return render_template('users/base.html/', content_template='users/time_tracker.html', tracker_msg=msg)
+#     return redirect(url_for("user_bp.signin"))
 
 
 @user_blueprint.route('/logout')

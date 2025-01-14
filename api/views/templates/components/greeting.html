@@ -4,6 +4,8 @@
     {% else %}
         <h1 class=" lg:mx-2 lg:pt-5 ml-[80px] pt-5 text-gray-200 mx-2 text-2xl">Good evening, User</h1>
     {% endif %}
+
+    <p id="h_user_id" class="hidden">{{ session.user.get('user_id')}}</p>
 </div>
 
 <!-- <div class="bg-gray-900 h-20">

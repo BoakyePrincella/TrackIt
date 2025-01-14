@@ -17,10 +17,13 @@ db = SQLAlchemy(app)
 from api.views.users import user_blueprint
 from api.v1.tasks import tasks_api
 from api.v1.users import users_api
+from api.v1.activities import activities_api
+
 
 app.register_blueprint(user_blueprint)
 app.register_blueprint(tasks_api)
 app.register_blueprint(users_api)
+app.register_blueprint(activities_api)
 
 
 if __name__ == '__main__':

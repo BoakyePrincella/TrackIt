@@ -26,7 +26,10 @@
         <div class="loader-spinner ml-52"></div>
     </div>
 
+    {% block scripts %}
     <script src="{{url_for('user_bp.static', filename='main.js')}}"></script>
+    {% endblock scripts %}
+
 </body>
 
 </html>
