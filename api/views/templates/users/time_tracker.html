@@ -1,0 +1,83 @@
+{% block content %}
+<p class="text-3xl mx-2 my-3 uppercase">Time tracker</p>
+<!-- Start Task Section -->
+<div class="flex flex-row gap-10 mt-[7%] ml-[7%] gap-x-32">
+
+    <div class="border border-black rounded-lg w-96 p-3 h-auto shadow-2xl">
+        <h2 class="font-medium text-xl mt-2 ml-5 mb-5">Start Activity <i
+                class="mx-2 bi bi-info-circle-fill text-gray-400"></i>
+        </h2>
+        <form class="flex flex-col mx-5 gap-y-10" id="start_task_form">
+            <input type="text" name="task_name" placeholder="Activity name"
+                class="h-10 rounded-sm bg-blue-200 pl-2 placeholder:pl-1 placeholder:text-gray-600" required>
+            <button type="button" onclick="startTask()" class="bg-blue-400 h-7 rounded-full hover:text-gray-200 hover:bg-purple-700" id="start_activity">Start
+                Activity</button>
+        </form>
+        <div id="task_message" class="mt-3 ml-5 font-semibold text-gray-900"></div>
+        <div id="save_message" class="mt-3 ml-5 font-semibold text-gray-900"></div>
+        <div id="timer" class="mt-3 my-5 mr-4 text-md  text-center text-purple-400 font-semibold"></div>
+        <button type="button" onclick="stopTask()" class="bg-red-400 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden" id="stop_activity">Stop Activity</button>
+        <button type="button" onclick="save()" class="bg-green-500 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden" id="save_activity">Save</button>
+
+
+    </div>
+
+    <div id="task_controls" class="hidden">
+        <button id="stop_task_button">Stop Activity</button>
+    </div>
+
+
+    <!-- Start Timer Section -->
+    <div class="border border-black w-96 h-auto rounded-lg p-3 shadow-2xl">
+        <h2 class="font-medium text-xl mt-2 ml-5 mb-5">Set Timer <i
+                class="mx-2 bi bi-info-circle-fill text-gray-400"></i></h2>
+
+        <form class="flex flex-col mx-5 gap-y-10" id="start_timer_form">
+            <input type="number" name="duration" placeholder="Duration (minutes)"
+                class="h-10 rounded-sm bg-blue-200 pl-2 placeholder:pl-1 placeholder:text-gray-600" required>
+            <button type="submit" class="bg-blue-400 h-7 rounded-full  hover:text-gray-200 hover:bg-purple-700"">Start Timer</button>
+        </form>
+    </div> 
+    <div id=" timer_controls" class="hidden">
+                <button id="stop_timer_button">Stop Timer</button>
+    </div>
+
+</div>
+<hr class="border-t-2 border-black mt-7 mx-5 w-[90%]">
+
+<div>
+    <p class="text-2xl mx-4 my-3 uppercase">History</p>
+    <div class="ml-5">
+        <a class="mr-5 underline" href="#">Activities</a>
+        <a href="#">Timers</a>
+    </div>
+    {% if tracker_history %}
+    <table class="min-w-[90%] mx-4 table-auto border-collapse">
+        <thead>
+            <tr>
+                <th class="px-4 py-2 border-b text-left">Activity</th>
+                <th class="px-4 py-2 border-b text-left">Duration</th>
+                <th class="px-4 py-2 border-b text-left">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity in tracker_history %}
+            <tr class="hover:bg-gray-500 hover:text-gray-50">
+                <td class="px-4 py-2 border-b">{{ activity.actiivity }}</td>
+                <td class="px-4 py-2 border-b">{{ activity.duration }}</td>
+                <td class="px-4 py-2 border-b">{{ activity.date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="flex justify-center items-center">
+        <p>No history available yet <i class="bi bi-exclamation-triangle-fill"></i></p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock content %}
+{% block scripts %}
+    <script src="{{url_for('user_bp.static', filename='time_tracker.js')}}"></script>
+{% endblock scripts %}
