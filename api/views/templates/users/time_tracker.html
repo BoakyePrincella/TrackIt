@@ -1,29 +1,34 @@
 {% block content %}
 <p class="text-3xl mx-2 my-3 uppercase">Time tracker</p>
-<!-- Start Task Section -->
+<!-- Start Activity Section -->
 <div class="flex flex-row gap-10 mt-[7%] ml-[7%] gap-x-32">
 
     <div class="border border-black rounded-lg w-96 p-3 h-auto shadow-2xl">
         <h2 class="font-medium text-xl mt-2 ml-5 mb-5">Start Activity <i
                 class="mx-2 bi bi-info-circle-fill text-gray-400"></i>
         </h2>
-        <form class="flex flex-col mx-5 gap-y-10" id="start_task_form">
-            <input type="text" name="task_name" placeholder="Activity name"
+        <form class="flex flex-col mx-5 gap-y-10" id="start_activity_form">
+            <input type="text" name="activity_name" id="activity_name" placeholder="Activity name"
                 class="h-10 rounded-sm bg-blue-200 pl-2 placeholder:pl-1 placeholder:text-gray-600" required>
-            <button type="button" onclick="startTask()" class="bg-blue-400 h-7 rounded-full hover:text-gray-200 hover:bg-purple-700" id="start_activity">Start
+            <button type="button" onclick="startActivity()"
+                class="bg-blue-400 h-7 rounded-full hover:text-gray-200 hover:bg-purple-700" id="start_activity">Start
                 Activity</button>
         </form>
-        <div id="task_message" class="mt-3 ml-5 font-semibold text-gray-900"></div>
+        <div id="activity_message" class="mt-3 ml-5 font-semibold text-gray-900"></div>
         <div id="save_message" class="mt-3 ml-5 font-semibold text-gray-900"></div>
         <div id="timer" class="mt-3 my-5 mr-4 text-md  text-center text-purple-400 font-semibold"></div>
-        <button type="button" onclick="stopTask()" class="bg-red-400 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden" id="stop_activity">Stop Activity</button>
-        <button type="button" onclick="save()" class="bg-green-500 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden" id="save_activity">Save</button>
+        <button type="button" onclick="stopActivity()"
+            class="bg-red-400 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden"
+            id="stop_activity">Stop Activity</button>
+        <button type="button" onclick="save()"
+            class="bg-green-500 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden"
+            id="save_activity">Save</button>
 
 
     </div>
 
-    <div id="task_controls" class="hidden">
-        <button id="stop_task_button">Stop Activity</button>
+    <div id="activity_controls" class="hidden">
+        <button id="stop_activity_button">Stop Activity</button>
     </div>
 
 
@@ -33,13 +38,27 @@
                 class="mx-2 bi bi-info-circle-fill text-gray-400"></i></h2>
 
         <form class="flex flex-col mx-5 gap-y-10" id="start_timer_form">
-            <input type="number" name="duration" placeholder="Duration (minutes)"
+            <input type="number" name="duration" id="duration" placeholder="Duration (minutes.seconds)"
                 class="h-10 rounded-sm bg-blue-200 pl-2 placeholder:pl-1 placeholder:text-gray-600" required>
-            <button type="submit" class="bg-blue-400 h-7 rounded-full  hover:text-gray-200 hover:bg-purple-700"">Start Timer</button>
+            <button type="button" onclick="setTimer()"
+                class="bg-blue-400 h-7 rounded-full  hover:text-gray-200 hover:bg-purple-700">Start Timer</button>
         </form>
-    </div> 
-    <div id=" timer_controls" class="hidden">
-                <button id="stop_timer_button">Stop Timer</button>
+        <div id="timer_controls" class="hidden">
+            <div class="flex justify-between" id="timerr">
+                <p id="countdown_timer" class="mt-4 ml-8 mb-3 text-2xl font-semibold text-gray-900"></p>
+                <i class="bi bi-volume-mute mt-4 mb-3 mr-12 text-2xl"></i>
+            </div>
+
+            <p id="time_up" class="mt-4 ml-8 mb-5 text-2xl font-semibold text-gray-900"></p>
+            <button id="stop_timer_button"
+                class="bg-red-400 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden mt-5"
+                onclick="stopTimer()">Stop Timer</button>
+            <button type="button" onclick="saveTimer()"
+                class="bg-green-500 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden"
+                id="save_timer">Save</button>
+        </div>
+
+        <audio id="timer_sound" src="{{ url_for('static', filename='assets/timer_sound.mp3') }}"></audio>
     </div>
 
 </div>
@@ -52,7 +71,7 @@
         <a href="#">Timers</a>
     </div>
     {% if tracker_history %}
-    <table class="min-w-[90%] mx-4 table-auto border-collapse">
+    <table class="min-w-[90%] mx-4 pb-5 table-auto border-collapse">
         <thead>
             <tr>
                 <th class="px-4 py-2 border-b text-left">Activity</th>
@@ -68,10 +87,11 @@
                 <td class="px-4 py-2 border-b">{{ activity.date }}</td>
             </tr>
             {% endfor %}
+
         </tbody>
     </table>
     {% else %}
-    <div class="flex justify-center items-center">
+    <div class="flex justify-start ml-5 my-4 items-center">
         <p>No history available yet <i class="bi bi-exclamation-triangle-fill"></i></p>
     </div>
     {% endif %}
@@ -79,5 +99,5 @@
 
 {% endblock content %}
 {% block scripts %}
-    <script src="{{url_for('user_bp.static', filename='time_tracker.js')}}"></script>
+<script src="{{url_for('user_bp.static', filename='time_tracker.js')}}"></script>
 {% endblock scripts %}

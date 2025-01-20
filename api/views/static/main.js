@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
             url = link.getAttribute('data-url');
             contentDiv.innerHTML = '';
             loader.classList.remove('hidden');
-
+            
             fetch(url, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
