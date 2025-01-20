@@ -80,7 +80,7 @@ def signup():
                         session.permanent = True
                         session['user'] = {"user_id":new_user.userid, "email": email, "username": username}
                         print(session['user'])
-                        return redirect(url_for('user_bp.signup_complete'))
+                        return redirect(url_for('user_bp.signup'))
                     
                     return render_template('users/auth/signup.html', error=error)
                 except OperationalError:
@@ -137,34 +137,41 @@ def time_tracker():
     userid = session.get('user', {}).get('user_id')
     if userid:
         act_url = f"{os.getenv('API_URL')}/activities/{userid}"
+       
         response = requests.get(act_url)
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             if response.status_code == 200:
                 data = response.json()
-            return render_template('users/time_tracker.html', tracker_history=data)
+            # elif response.status_code == 400:
+            #     data = "No activies yet!"
+                return render_template('users/time_tracker.html', tracker_history=data)
+            return render_template('users/time_tracker.html')
         else:
             if response.status_code == 200:
                 data = response.json()
-            return render_template('users/base.html', content_template='users/time_tracker.html', tracker_history=data)
+            # elif response.status_code == 400:
+            #     data = "No activies yet!"
+                return render_template('users/base.html', content_template='users/time_tracker.html', tracker_history=data)
+            return render_template('users/base.html', content_template='users/time_tracker.html')
     return redirect(url_for("user_bp.signin"))
 
 
-@user_blueprint.route('/start-task', methods=['POST'])
-def start_task():
+@user_blueprint.route('/start-activity', methods=['POST'])
+def start_activity():
     form_data = request.form
-    task = form_data.get('task_name')
+    activity = form_data.get('activity_name')
     start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    return jsonify({"message": f"Activity - {task} started", "start_time": start_time, "activity": f"{task}" })
+    return jsonify({"message": f"Activity - {activity} started", "start_time": start_time, "activity": f"{activity}" })
 
-@user_blueprint.route('/stop-task', methods=['POST'])
-def stop_task():
+@user_blueprint.route('/stop-activity', methods=['POST'])
+def stop_activity():
     data = request.get_json()
     elapsed_time = data.get('elapsed_time')
     # Here, you would typically save the elapsed_time to the database.
     return jsonify({"message": f"Activity stopped. Total elapsed time: {elapsed_time} seconds",})
 
-@user_blueprint.route('/save-task', methods=['POST'])
-def save_task():
+@user_blueprint.route('/save-activity', methods=['POST'])
+def save_activity():
     from api.views.db import Activities
     from app import db
     data = request.get_json()
@@ -185,10 +192,22 @@ def save_task():
     return redirect(url_for("user_bp.signin"))
     # Here, you would typically save the elapsed_time to the database.
 
-# @user_blueprint.route('/activities')
-# def activities():
-#     userid = session.get('user', {}).get('user_id')
-#     if userid:
+@user_blueprint.route('/start-timer', methods=['POST'])
+def start_timer():
+    userid = session.get('user', {}).get('user_id')
+    if userid:
+        form_data = request.form
+        duration_whole = form_data.get('duration')
+        if duration_whole:
+            duration_div = duration_whole.split('.')
+            minutes = int(duration_div[0]) if duration_div[0] else 0
+            seconds = int(duration_div[1]) if len(duration_div) > 1 and duration_div[1] else 0
+        else:
+            minutes = 0
+            seconds = 0
+        if minutes != 0 or seconds != 0:
+            return jsonify({"message": f"Timer set for {minutes} mins : {seconds} secs", "min": minutes, "sec": seconds})
+        return jsonify({"message": f"Cannot set timer for {minutes} mins : {seconds} secs"})
 #         url = f"{os.getenv('API_URL')}/activities/{userid}"
 #         response = requests.get(url)
 #         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

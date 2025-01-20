@@ -37,13 +37,13 @@
         </tr>
     </thead>
     <tbody>
-        {% for task in data %}
-        <tr class="hover:bg-gray-500 hover:text-gray-50">
-            <td class="px-4 py-2 border-b">{{ task.title }}</td>
-            <td class="px-4 py-2 border-b">{{ task.description }}</td>
-            <td class="px-4 py-2 border-b">{{ task.date_created }}</td>
-        </tr>
-        {% endfor %}
+            {% for task in data %}
+            <tr class="hover:bg-gray-500 hover:text-gray-50">
+                <td class="px-4 py-2 border-b">{{ task.title }}</td>
+                <td class="px-4 py-2 border-b">{{ task.description }}</td>
+                <td class="px-4 py-2 border-b">{{ task.date_created }}</td>
+            </tr>
+            {% endfor %}
     </tbody>
 </table>
 {% elif msg %}
