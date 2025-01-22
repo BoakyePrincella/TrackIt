@@ -109,11 +109,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.text();
                 })
                 .then(html => {
+                    
                     loader.classList.add('hidden');
                     contentDiv.innerHTML = html;
                     const div = link.querySelector('div');
                     div.classList.add('bg-blue-600');
                     history.pushState(null, '', url);
+                    this.location.reload();
+
 
                 })
                 .catch(error => {
@@ -127,8 +130,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('popstate', function () {
         const currentUrl = window.location.pathname;
         fetch(currentUrl)
-            .then(response => response.text())
-            .then(html => {
+        .then(response => response.text())
+        .then(html => {
                 contentDiv.innerHTML = html; // Load content based on current URL
             })
             .catch(error => {

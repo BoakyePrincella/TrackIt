@@ -67,3 +67,18 @@ class Activities(db.Model):
             'duration': self.duration.strftime('%H:%M:%S'),
             'date': format_datetime(self.date)
         }
+        
+class Timers(db.Model):
+    '''the timers table'''
+    __tablename__ = 'timers'
+    timer_id = Column(Integer, primary_key=True, autoincrement=True)
+    userid = Column(Integer, ForeignKey('users.userid'))
+    duration = Column(Time)
+    date = Column(DateTime, default=datetime.now())
+    
+    def to_dict(self):
+        return {
+            'userid': self.userid,
+            'duration': self.duration.strftime('%H:%M:%S'),
+            'date': format_datetime(self.date)
+        }

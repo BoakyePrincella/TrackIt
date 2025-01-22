@@ -23,5 +23,19 @@ def tasks_per_user(userid):
             # if len(user_tasks) == 1:
                 # return jsonify(len().to_dict())
             return jsonify([activity.to_dict() for activity in user_actiivites])
-        return jsonify({"Error": f"No tasks for user {userid} found"}), 400
+        return jsonify({"Error": f"No tasks found"}), 400
+    return jsonify({"Error": "User does not exist"})
+
+@activities_api.route('timers/<int:userid>', methods=['GET'], strict_slashes=False)
+def timers_per_user(userid):
+    '''Retrieves timers  for a specific user'''
+    from api.views.db import Timers, Users
+    user = Users.query.filter_by(userid=userid)
+    if user:
+        user_timers = Timers.query.filter_by(userid=userid).all()
+        if user_timers:
+            # if len(user_tasks) == 1:
+                # return jsonify(len().to_dict())
+            return jsonify([timer.to_dict() for timer in user_timers])
+        return jsonify({"Error": f"No timers found"}), 400
     return jsonify({"Error": "User does not exist"})

@@ -110,6 +110,26 @@ def home():
         return render_template('users/home.html')  
     return render_template('users/base.html', content_template='users/home.html')
 
+@user_blueprint.route('/add-task', methods=['POST'])
+def add_task():
+    from app import db
+    from api.views.db import Tasks
+    userid = session.get('user', {}).get('user_id')
+    data = request.get_json()
+    task_title = data.get('title')
+    task_description = data.get('description')
+    if userid:
+        if task_title and task_description:
+            try:
+                new_task = Tasks(userid=userid, title=task_title, description=task_description)
+                db.session.add(new_task)
+                db.session.commit()
+                return jsonify({"message": f"Task saved. {task_title}"})
+            except OperationalError:
+                    return render_template("error.html", message="Unable to connect to the server, Please check your network connection and try again")
+        return jsonify({"message": "Title and description needed"})
+    return redirect(url_for("user_bp.signin"))
+
 @user_blueprint.route('/tasks')
 def tasks():
     userid = session.get('user', {}).get('user_id')
@@ -137,6 +157,7 @@ def time_tracker():
     userid = session.get('user', {}).get('user_id')
     if userid:
         act_url = f"{os.getenv('API_URL')}/activities/{userid}"
+        
        
         response = requests.get(act_url)
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -190,7 +211,6 @@ def save_activity():
                     return render_template("error.html", message="Unable to connect to the server, Please check your network connection and try again")
         return jsonify({"Error": "Time and activity needed"})
     return redirect(url_for("user_bp.signin"))
-    # Here, you would typically save the elapsed_time to the database.
 
 @user_blueprint.route('/start-timer', methods=['POST'])
 def start_timer():
@@ -208,6 +228,36 @@ def start_timer():
         if minutes != 0 or seconds != 0:
             return jsonify({"message": f"Timer set for {minutes} mins : {seconds} secs", "min": minutes, "sec": seconds})
         return jsonify({"message": f"Cannot set timer for {minutes} mins : {seconds} secs"})
+    return redirect(url_for("user_bp.signin"))
+
+@user_blueprint.route('/save-timer', methods=['POST'])
+def save_timer():
+    from api.views.db import Timers
+    from app import db
+    data = request.get_json()
+    set_time = data.get('set_time')
+    # activity = data.get('activity')
+    user = data.get('user')
+
+    if user:
+        if set_time:
+            try:
+                timer = Timers(userid=user, duration=set_time)
+                db.session.add(timer)
+                db.session.commit()
+                return jsonify({"message": f"Timer saved. {set_time} seconds "})
+            except OperationalError:
+                    return render_template("error.html", message="Unable to connect to the server, Please check your network connection and try again")
+        return jsonify({"message": "Set time needed"})
+    return redirect(url_for("user_bp.signin"))
+
+@user_blueprint.route('/timers-history', methods=['GET'])
+def timer_history():
+    userid = session.get('user', {}).get('user_id')
+    if userid:
+        act_url = f"{os.getenv('API_URL')}/timers/{userid}"
+
+
 #         url = f"{os.getenv('API_URL')}/activities/{userid}"
 #         response = requests.get(url)
 #         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

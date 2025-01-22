@@ -1,11 +1,10 @@
 
 //  for modal functionality
 // const addTaskButton = document.getElementById('addTaskButton');
-const closeButton = document.getElementById('closeModal');
-const taskForm = document.getElementById('taskForm');
+// const closeButton = document.getElementById('closeModal');
 
 
-function openModal(){
+function openModal() {
     const taskModal = document.getElementById('taskModal');
     taskModal.classList.remove('hidden');
     taskModal.classList.add('flex');
@@ -13,14 +12,56 @@ function openModal(){
 }
 
 
-function closeM(){
+function closeM() {
     const taskModal = document.getElementById('taskModal');
     taskModal.classList.add('hidden');
 }
 
-function submitTask(event){
-    event.preventDefault();
-    alert('Submitting')
+function submitTask() {
+    const taskForm = document.getElementById('taskForm');
+    if (taskForm) {
+        const title = document.getElementById('taskTitle').value;
+        const description = document.getElementById('taskDescription').value;
+
+        if (!title && !description) {
+            document.getElementById('error_msg').textContent = "Title and description required";
+        } else if (!title) {
+            document.getElementById('error_msg').textContent = "Title required";
+        } else if (!description) {
+            document.getElementById('error_msg').textContent = "Description required";
+
+        } else {
+            const data = {
+                "title": title,
+                "description": description
+            }
+
+            fetch('/add-task', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload();
+                    // console.log(data);
+                    
+                })
+                .catch(err => {
+                    console.log('Error', err);
+                })
+                    // document.getElementById('activity_message').classList.add('hidden');
+                    // document.getElementById('save_message').textContent = data.message;
+            // alert('Form filled rightly');
+        }
+    }
+    else {
+        alert('Form required');
+    }
+    // event.preventDefault();
 }
 // }
 // Open modal when button is clicked

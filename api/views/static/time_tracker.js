@@ -77,6 +77,7 @@ let timerInterval;
 let startTime;
 let activity = ''
 let user_id = parseInt(document.getElementById('h_user_id').textContent);
+let [minutes, seconds] = [];
 
 // Starts the activity
 function startActivity() {
@@ -182,7 +183,7 @@ function setTimer() {
             .then(response => response.json())
             .then(data => {
                 alert(data.message);
-                const [minutes, seconds] = [data.min, data.sec];
+                [minutes, seconds] = [data.min, data.sec];
                 document.getElementById('start_timer_form').classList.add('hidden');
                 document.getElementById('stop_timer_button').classList.remove('hidden');
                 startCountdown(minutes, seconds);
@@ -217,6 +218,33 @@ function startCountdown(minutes, seconds) {
     }, 1000);
 }
 
+
+function saveTimer() {
+    let totalSeconds = minutes * 60 + seconds;
+    const data = {
+        "user": user_id,
+        "set_time": totalSeconds
+    };
+    fetch('/save-timer', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => response.json())
+        .then(data => {
+            // alert(data.message)
+            document.getElementById('time_up').classList.add('hidden');
+            document.getElementById('timer_message').textContent = data.message;
+            document.getElementById('save_timer').classList.add('hidden');
+            // document.getElementById('save_activity').classList.remove('hidden');
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        });
+}
+
 function playSound() {
     const sound = document.getElementById('timer_sound');
     sound.play();
@@ -233,4 +261,27 @@ function stopTimer() {
     clearInterval(timerInterval_ct);
     alert('Timer stopped');
     // stopSound();
+}
+
+function loadHistory(tab){
+    // const url = {{ url_for(user_bp.timer_history)}};
+    if (tab == 'activities'){
+        document.getElementById('timers_hist').classList.remove('underline')
+        document.getElementById('activities_hist').classList.add('underline')
+    } else if (tab == 'timers'){
+        document.getElementById('activities_hist').classList.remove('underline')
+        document.getElementById('timers_hist').classList.add('underline')
+
+        fetch('/timers-history')
+        .then(res => {
+            if(!res.ok){
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return res.json()
+        })
+        .then(data => {
+            
+        })
+    }
+    // alert(tab);
 }
