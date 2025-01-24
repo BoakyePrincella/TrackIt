@@ -50,12 +50,14 @@
             </div>
 
             <p id="time_up" class="mt-4 ml-8 mb-5 text-2xl font-semibold text-gray-900"></p>
+            <div id="timer_message" class="mt-4 ml-8 mb-5 text-2xl font-semibold text-gray-900"></div>
             <button id="stop_timer_button"
                 class="bg-red-400 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden mt-5"
                 onclick="stopTimer()">Stop Timer</button>
             <button type="button" onclick="saveTimer()"
                 class="bg-green-500 h-7 rounded-full w-[90%] ml-5 hover:text-gray-200 hover:bg-purple-700 hidden"
                 id="save_timer">Save</button>
+
         </div>
 
         <audio id="timer_sound" src="{{ url_for('static', filename='assets/timer_sound.mp3') }}"></audio>
@@ -67,8 +69,8 @@
 <div>
     <p class="text-2xl mx-4 my-3 uppercase">History</p>
     <div class="ml-5">
-        <a class="mr-5 underline" href="#">Activities</a>
-        <a href="#">Timers</a>
+        <a id="activities_hist" class="mr-5 underline cursor-pointer" onclick="loadHistory('activities')">Activities</a>
+        <a id="timers_hist" class="cursor-pointer" onclick="loadHistory('timers')">Timers</a>
     </div>
     {% if tracker_history %}
     <table class="min-w-[90%] mx-4 pb-5 table-auto border-collapse">
