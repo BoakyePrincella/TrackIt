@@ -280,7 +280,8 @@ function loadHistory(tab){
             return res.json()
         })
         .then(data => {
-            
+            document.getElementById('activities_hist_content').classList.add('hidden')
+            console.log(data)  
         })
     }
     // alert(tab);
