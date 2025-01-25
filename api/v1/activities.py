@@ -23,7 +23,7 @@ def tasks_per_user(userid):
             # if len(user_tasks) == 1:
                 # return jsonify(len().to_dict())
             return jsonify([activity.to_dict() for activity in user_actiivites])
-        return jsonify({"Error": f"No tasks found"}), 400
+        return jsonify({"Error": f"No activities found"}), 400
     return jsonify({"Error": "User does not exist"})
 
 @activities_api.route('timers/<int:userid>', methods=['GET'], strict_slashes=False)

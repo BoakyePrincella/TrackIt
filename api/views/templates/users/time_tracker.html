@@ -73,6 +73,7 @@
         <a id="timers_hist" class="cursor-pointer" onclick="loadHistory('timers')">Timers</a>
     </div>
     {% if tracker_history %}
+    <div id="activities_hist_content">
     <table class="min-w-[90%] mx-4 pb-5 table-auto border-collapse">
         <thead>
             <tr>
@@ -92,6 +93,7 @@
 
         </tbody>
     </table>
+    </div>
     {% else %}
     <div class="flex justify-start ml-5 my-4 items-center">
         <p>No history available yet <i class="bi bi-exclamation-triangle-fill"></i></p>

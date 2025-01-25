@@ -41,7 +41,7 @@ def signin():
                 session['user'] = {"user_id":user.userid, "username": username, "username": user.username}
                 # return jsonify({"user": session['user']})
                 flash("You were successfully logged in")
-                return redirect(url_for('user_bp.home'))
+                return redirect(url_for('user_bp.dashboard'))
             else:
                 error = "Invalid username or password"
         except OperationalError:
@@ -98,17 +98,17 @@ def signup():
             return render_template('users/auth/signup.html')
         
         else:
-            return redirect(url_for('user_bp.home'))
+            return redirect(url_for('user_bp.dashboard'))
             # print("Session retrieved on GET request:", user)
             # return jsonify({"user": user})
     
     return render_template('users/auth/signup.html')
 
-@user_blueprint.route('/home')
-def home():
+@user_blueprint.route('/dashboard')
+def dashboard():
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render_template('users/home.html')  
-    return render_template('users/base.html', content_template='users/home.html')
+        return render_template('users/dashboard.html')  
+    return render_template('users/base.html', content_template='users/dashboard.html')
 
 @user_blueprint.route('/add-task', methods=['POST'])
 def add_task():
@@ -157,7 +157,6 @@ def time_tracker():
     userid = session.get('user', {}).get('user_id')
     if userid:
         act_url = f"{os.getenv('API_URL')}/activities/{userid}"
-        
        
         response = requests.get(act_url)
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -193,12 +192,23 @@ def stop_activity():
 
 @user_blueprint.route('/save-activity', methods=['POST'])
 def save_activity():
+    from datetime import time
     from api.views.db import Activities
     from app import db
     data = request.get_json()
-    elapsed_time = data.get('elapsed_time')
+    # elapsed_time = data.get('elapsed_time')
+    elapsed_seconds = data.get('elapsed_time', 0)  # Defaults to 0 if not provided
+
+    # Convert seconds to hours, minutes, and seconds
+    hours, remainder = divmod(elapsed_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    # Create a time object
+    elapsed_time = time(hour=hours % 24, minute=minutes, second=seconds)
     activity = data.get('activity')
     user = data.get('user')
+    # print( (type(elapsed_time), type(Activities.duration)))
+    # return "Yes"
 
     if user:
         if elapsed_time and activity:
@@ -232,11 +242,20 @@ def start_timer():
 
 @user_blueprint.route('/save-timer', methods=['POST'])
 def save_timer():
+    from datetime import time
+
     from api.views.db import Timers
     from app import db
     data = request.get_json()
-    set_time = data.get('set_time')
-    # activity = data.get('activity')
+    set_time = data.get('set_time', 0)
+    # elapsed_seconds = data.get('elapsed_time', 0)  # Defaults to 0 if not provided
+
+    # Convert seconds to hours, minutes, and seconds
+    hours, remainder = divmod(set_time, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    # Create a time object
+    set_time = time(hour=hours % 24, minute=minutes, second=seconds)
     user = data.get('user')
 
     if user:
@@ -256,8 +275,13 @@ def timer_history():
     userid = session.get('user', {}).get('user_id')
     if userid:
         act_url = f"{os.getenv('API_URL')}/timers/{userid}"
-
-
+        response = requests.get(act_url)
+        if response.status_code == 200:
+            data = response.json()
+            return data
+        return redirect(url_for("user_bp.signin"))
+        
+        
 #         url = f"{os.getenv('API_URL')}/activities/{userid}"
 #         response = requests.get(url)
 #         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

@@ -46,10 +46,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const contentDiv = document.getElementById('dynamic-content');
     const loader = document.getElementById('loader');
 
-    //fetch curent path or home page by default
+    //fetch curent path or dashboard page by default
     let url = window.location.pathname;
     if (url === '/') {
-        url = '/home';
+        url = '/dashboard';
     }
 
     document.querySelectorAll('.sidebar-link').forEach(item => {
