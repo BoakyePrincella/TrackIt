@@ -370,7 +370,7 @@ def save_activity():
                 new_activity = Activities(userid=user, act_name=activity, duration=elapsed_time, date=datetime.now())
                 db.session.add(new_activity)
                 db.session.commit()
-                return jsonify({"message": f"Activity saved. {activity} - Total elapsed time: {elapsed_time} seconds by user {user}"})
+                return jsonify({"message": f"Activity saved. {activity} - Total elapsed time: {elapsed_time} seconds"})
             except OperationalError:
                     return render_template("error.html", message="Unable to connect to the server, Please check your network connection and try again")
         return jsonify({"Error": "Time and activity needed"})
