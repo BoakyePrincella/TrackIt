@@ -7,20 +7,23 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <h2 class="text-xl font-semibold mb-4">Task Status</h2>
-                <canvas id="taskStatusChart"></canvas>
+                <!-- <div style="width: 80%; margin: auto;"> -->
+                    <canvas id="taskStatusChart"></canvas>
+                <!-- </div> -->
+                <!-- <canvas id="taskStatusChart"></canvas> -->
             </div>
 
             <!-- Activities & Timers -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="bg-white p-6 h-max rounded-lg shadow-lg">
                 <h2 class="text-xl font-semibold mb-4">Overview</h2>
                 <div class="space-y-4">
                     <div class="flex justify-between">
                         <span class="text-lg">Activities:</span>
-                        <span class="font-bold">{{ activities_count }}</span>
+                        <span class="font-bold">{{ activity_status_data }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-lg">Timers Set:</span>
-                        <span class="font-bold">{{ timers_count }}</span>
+                        <span class="font-bold">{{ timer_status_data }}</span>
                     </div>
                 </div>
             </div>
@@ -28,5 +31,58 @@
     </div>
 {% endblock content %}
 {% block scripts %}
-<script src="{{url_for('user_bp.static', filename='dashboard.js')}}"></script>
+<!-- <script src="{{url_for('user_bp.static', filename='dashboard.js')}}"></script> -->
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('taskStatusChart').getContext('2d');
+        var chartData = {{ chart_data | tojson | safe
+    }};
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: chartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                title: {
+                    display: true,
+                    text: 'Task Status Distribution'
+                }
+            }
+        }
+    });
+        });
+</script> -->
+<script>
+    function initializeChart() {
+        var ctx = document.getElementById('taskStatusChart');
+        if (ctx) {
+            var chartData = {{ chart_data | tojson | safe }};
+            new Chart(ctx, {
+                type: 'pie',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Task Status Distribution'
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // This function will be called from main.js after content is loaded
+    window.dashboardLoaded = function() {
+        initializeChart();
+    };
+</script>
 {% endblock scripts %}

@@ -77,6 +77,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 div.classList.add('bg-blue-600');
             }
             history.pushState(null, '', url);
+            if (url === "/dashboard" && window.dashboardLoaded) {
+                window.dashboardLoaded()
+              }
+            
+
         })
         .catch(error => {
             console.error("Error fetching the page:", error);
@@ -115,6 +120,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     const div = link.querySelector('div');
                     div.classList.add('bg-blue-600');
                     history.pushState(null, '', url);
+                    if (url === "/dashboard" && window.dashboardLoaded) {
+                        window.dashboardLoaded()
+                    }
                     this.location.reload();
 
 

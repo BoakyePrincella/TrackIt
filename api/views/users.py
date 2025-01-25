@@ -113,31 +113,154 @@ taskss = [
     {"status": "Finished"}
 ]
 
+@user_blueprint.route('/task-status-chart')
+def task_status_chart():
+    from sqlalchemy import func
+    from api.views.db import Tasks
+    from app import db
+    userid = session.get('user', {}).get('user_id')
+
+    # Query the database to get the count of tasks for each status
+    if userid:
+        task_status_data = db.session.query(
+            Tasks.status, 
+            func.count(Tasks.task_id)
+        ).filter(Tasks.userid == userid).group_by(Tasks.status).all()
+        
+        # Prepare the data for the chart
+        labels = [status.name for status, _ in task_status_data]
+        data = [count for _, count in task_status_data]
+        
+        # Prepare the chart data
+        chart_data = {
+            'labels': labels,
+            'datasets': [{
+                'data': data,
+                'backgroundColor': [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                ],
+            }]
+        }
+        return render_template('users/task_status_chart.html', chart_data=chart_data)
+    return redirect(url_for("user_bp.signin"))
+
 
 @user_blueprint.route('/dashboard')
 def dashboard():
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        
-         # Calculate counts for statuses
-        status_counts = {"Not Started": 0, "In Progress": 0, "Finished": 0}
-        for task in taskss:
-            status_counts[task["status"]] += 1
-        
-        # Dummy activities and timers data
-        activities_count = len(taskss)  # or whatever logic to get your activities
-        timers_count = 5  # example number of timers set
-
-        return render_template("users/dashboard.html", status_counts=status_counts, activities_count=activities_count, timers_count=timers_count)
-        
-        # return render_template('users/dashboard.html') 
-    status_counts = {"Not Started": 0, "In Progress": 0, "Finished": 0}
-    for task in taskss:
-        status_counts[task["status"]] += 1
+    from sqlalchemy import func
+    from api.views.db import Tasks, Activities, Timers
+    from app import db
+    userid = session.get('user', {}).get('user_id')
     
-    # Dummy activities and timers data
-    activities_count = len(taskss)  # or whatever logic to get your activities
-    timers_count = 5  # example number of 
-    return render_template('users/base.html', content_template='users/dashboard.html', status_counts=status_counts, activities_count=activities_count, timers_count=timers_count)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+
+    # Query the database to get the count of tasks for each status
+        if userid:
+            activity_status_data = db.session.query(
+                func.count(Activities.act_id)  # Counting the number of activities
+            ).filter(Activities.userid == userid).scalar()
+
+            # ).filter(Activities.userid == userid).group_by(Activities.act_name).scalar()
+            
+            timer_status_data = db.session.query(
+                func.count(Timers.timer_id)  # Counting the number of timers
+            ).filter(Timers.userid == userid).scalar()
+
+            # ).filter(Timers.userid == userid).group_by(Timers.duration).scalar()
+            
+            task_status_data = db.session.query(
+                Tasks.status, 
+                func.count(Tasks.task_id)
+            ).filter(Tasks.userid == userid).group_by(Tasks.status).all()
+            
+            # Prepare the data for the chart
+            labels = [status.name for status, _ in task_status_data]
+            data = [count for _, count in task_status_data]
+            
+            # Prepare the chart data
+            chart_data = {
+                'labels': labels,
+                'datasets': [{
+                    'data': data,
+                    'backgroundColor': [
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(153, 102, 255, 0.8)',
+                    ],
+                }]
+            }
+            return render_template('users/dashboard.html', chart_data=chart_data, activity_status_data=activity_status_data, timer_status_data=timer_status_data)
+        return redirect(url_for("user_bp.signin"))
+        
+    
+        #  # Calculate counts for statuses
+        # status_counts = {"Not Started": 0, "In Progress": 0, "Finished": 0}
+        # for task in taskss:
+        #     status_counts[task["status"]] += 1
+        
+        # # Dummy activities and timers data
+        # activities_count = len(taskss)  # or whatever logic to get your activities
+        # timers_count = 5  # example number of timers set
+
+        # return render_template("users/dashboard.html", status_counts=status_counts, activities_count=activities_count, timers_count=timers_count)
+        
+        # # return render_template('users/dashboard.html') 
+        
+
+    # Query the database to get the count of tasks for each status
+    if userid:
+        activity_status_data = db.session.query(
+            func.count(Activities.act_id)  # Counting the number of activities
+        ).filter(Activities.userid == userid).scalar()
+
+        # ).filter(Activities.userid == userid).group_by(Activities.act_name).scalar()
+        
+        timer_status_data = db.session.query(
+            func.count(Timers.timer_id)  # Counting the number of timers
+        ).filter(Timers.userid == userid).scalar()
+
+        # ).filter(Timers.userid == userid).group_by(Timers.duration).scalar()
+        
+        task_status_data = db.session.query(
+            Tasks.status, 
+            func.count(Tasks.task_id)
+        ).filter(Tasks.userid == userid).group_by(Tasks.status).all()
+        
+        # Prepare the data for the chart
+        labels = [status.name for status, _ in task_status_data]
+        data = [count for _, count in task_status_data]
+        
+        # Prepare the chart data
+        chart_data = {
+            'labels': labels,
+            'datasets': [{
+                'data': data,
+                'backgroundColor': [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                ],
+            }]
+        }
+        return render_template('users/base.html', content_template='users/dashboard.html', chart_data=chart_data, activity_status_data=activity_status_data, timer_status_data=timer_status_data)
+    return redirect(url_for("user_bp.signin"))
+        
+    # status_counts = {"Not Started": 0, "In Progress": 0, "Finished": 0}
+    # for task in taskss:
+    #     status_counts[task["status"]] += 1
+    
+    # # Dummy activities and timers data
+    # activities_count = len(taskss)  # or whatever logic to get your activities
+    # timers_count = 5  # example number of 
+    # return render_template('users/base.html', content_template='users/dashboard.html', status_counts=status_counts, activities_count=activities_count, timers_count=timers_count)
 
 @user_blueprint.route('/add-task', methods=['POST'])
 def add_task():
@@ -151,7 +274,7 @@ def add_task():
     if userid:
         if task_title and task_description and isinstance(tstatus, int) :
             try:
-                new_task = Tasks(userid=userid, status=TaskStatus(tstatus), title=task_title, description=task_description)
+                new_task = Tasks(userid=userid, status=TaskStatus(tstatus), title=task_title, description=task_description, date_created=datetime.now())
                 db.session.add(new_task)
                 db.session.commit()
                 return jsonify({"message": f"Task saved. {task_title}"})
@@ -244,7 +367,7 @@ def save_activity():
     if user:
         if elapsed_time and activity:
             try:
-                new_activity = Activities(userid=user, act_name=activity, duration=elapsed_time)
+                new_activity = Activities(userid=user, act_name=activity, duration=elapsed_time, date=datetime.now())
                 db.session.add(new_activity)
                 db.session.commit()
                 return jsonify({"message": f"Activity saved. {activity} - Total elapsed time: {elapsed_time} seconds by user {user}"})
@@ -291,7 +414,7 @@ def save_timer():
     if user:
         if set_time:
             try:
-                timer = Timers(userid=user, duration=set_time)
+                timer = Timers(userid=user, duration=set_time, date=datetime.now())
                 db.session.add(timer)
                 db.session.commit()
                 return jsonify({"message": f"Timer saved. {set_time} seconds "})
@@ -309,7 +432,8 @@ def timer_history():
         if response.status_code == 200:
             data = response.json()
             return render_template('components/timer_history.html', timer_history=data)
-        return redirect(url_for("user_bp.signin"))
+        return render_template('components/timer_history.html')
+    return redirect(url_for("user_bp.signin"))
         
         
 #         url = f"{os.getenv('API_URL')}/activities/{userid}"

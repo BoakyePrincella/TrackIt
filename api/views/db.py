@@ -3,7 +3,7 @@ from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.orm import relationship
 from app import db
-from .helper import format_datetime
+# from .helper import format_datetime
 from enum import Enum as PyEnum
 
 
@@ -45,7 +45,7 @@ class Tasks(db.Model):
     userid = Column(Integer, ForeignKey('users.userid'))
     title = Column(String(255))
     description = Column(Text)
-    date_created = Column(DateTime, default=datetime.now())
+    date_created = Column(DateTime)
     status = Column(Enum(TaskStatus), default=TaskStatus.NOT_STARTED)
     
     
@@ -57,7 +57,7 @@ class Tasks(db.Model):
             'userid': self.userid,
             'title': self.title,
             'description': self.description,
-            "date_created": format_datetime(self.date_created),
+            "date_created": self.date_created,
             "status": self.status.name
         }
 
@@ -68,14 +68,14 @@ class Activities(db.Model):
     userid = Column(Integer, ForeignKey('users.userid'))
     act_name = Column(String(255))
     duration = Column(Time)
-    date = Column(DateTime, default=datetime.now())
+    date = Column(DateTime)
     
     def to_dict(self):
         return {
             'userid': self.userid,
             'actiivity': self.act_name,
             'duration': self.duration.strftime('%H:%M:%S'),
-            'date': format_datetime(self.date)
+            'date': self.date
         }
         
 class Timers(db.Model):
@@ -84,11 +84,11 @@ class Timers(db.Model):
     timer_id = Column(Integer, primary_key=True, autoincrement=True)
     userid = Column(Integer, ForeignKey('users.userid'))
     duration = Column(Time)
-    date = Column(DateTime, default=datetime.now())
+    date = Column(DateTime)
     
     def to_dict(self):
         return {
             'userid': self.userid,
             'duration': self.duration.strftime('%H:%M:%S'),
-            'date': format_datetime(self.date)
+            'date': self.date
         }
