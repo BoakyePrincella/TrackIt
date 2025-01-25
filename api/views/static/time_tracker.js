@@ -266,8 +266,11 @@ function stopTimer() {
 function loadHistory(tab){
     // const url = {{ url_for(user_bp.timer_history)}};
     if (tab == 'activities'){
-        document.getElementById('timers_hist').classList.remove('underline')
-        document.getElementById('activities_hist').classList.add('underline')
+        document.getElementById('timers_hist').classList.remove('underline');
+        document.getElementById('activities_hist').classList.add('underline');
+        document.getElementById('timer_hist_content').classList.add('hidden');
+        document.getElementById('activities_hist_content').classList.remove('hidden')
+
     } else if (tab == 'timers'){
         document.getElementById('activities_hist').classList.remove('underline')
         document.getElementById('timers_hist').classList.add('underline')
@@ -277,11 +280,12 @@ function loadHistory(tab){
             if(!res.ok){
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return res.json()
+            return res.text()
         })
-        .then(data => {
+        .then(html => {
             document.getElementById('activities_hist_content').classList.add('hidden')
-            console.log(data)  
+            document.getElementById('timer_hist_content').innerHTML = html;            
+            // console.log(data)  
         })
     }
     // alert(tab);

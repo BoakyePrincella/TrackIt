@@ -1,0 +1,23 @@
+{% if timer_history %}
+<table class="min-w-[90%] mx-4 pb-5 table-auto border-collapse">
+    <thead>
+        <tr>
+            <th class="px-4 py-2 border-b text-left">Duration</th>
+            <th class="px-4 py-2 border-b text-left">Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for timer in timer_history %}
+        <tr class="hover:bg-gray-500 hover:text-gray-50">
+            <td class="px-4 py-2 border-b">{{ timer.duration }}</td>
+            <td class="px-4 py-2 border-b">{{ timer.date }}</td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+{% else %}
+<div class="flex justify-start ml-5 my-4 items-center">
+    <p>No history available yet <i class="bi bi-exclamation-triangle-fill"></i></p>
+</div>
+{% endif %}

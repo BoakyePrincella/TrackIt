@@ -20,6 +20,25 @@
                 <label for="taskDescription" class="block text-sm font-medium text-black">Description</label>
                 <textarea id="taskDescription" name="description" required class="mt-1 p-2 block w-full border bg-gray-200 border-gray-300 rounded-md shadow-sm"></textarea>
             </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-black">Status</label>
+                <div class="flex space-x-4 mt-2">
+                    <div>
+                        <input type="radio" id="not_started" name="status" value="0" checked>
+                        <label for="not_started" class="text-sm mr-3 text-black">Not Started</label>
+                    </div>
+                    <br>
+                    <div>
+                        <input type="radio" id="in_progress" name="status" value="1">
+                        <label for="in_progress" class="text-sm mr-3 text-black">In Progress</label>
+                    </div>
+                    <br>
+                    <div>
+                        <input type="radio" id="finished" name="status" value="2">
+                        <label for="finished" class="text-sm text-black">Finished</label>
+                    </div>
+                </div>
+            </div>
             <div class="flex justify-end">
                 <button type="button" onclick="closeM()" id="closeModal" class="bg-gray-500 text-white p-2 rounded-md mr-2">Cancel</button>
                 <button type="button" class="bg-blue-500 text-white p-2 rounded-md" onclick="submitTask()">Add Task</button>
@@ -34,6 +53,7 @@
         <tr>
             <th class="px-4 py-2 border-b text-left">Title</th>
             <th class="px-4 py-2 border-b text-left">Description</th>
+            <th class="px-4 py-2 border-b text-left">Status</th>
             <th class="px-4 py-2 border-b text-left">Date Created</th>
         </tr>
     </thead>
@@ -42,6 +62,7 @@
             <tr class="hover:bg-gray-500 hover:text-gray-50">
                 <td class="px-4 py-2 border-b">{{ task.title }}</td>
                 <td class="px-4 py-2 border-b">{{ task.description }}</td>
+                <td class="px-4 py-2 border-b">{{ task.status.replace('_', ' ') }}</td>
                 <td class="px-4 py-2 border-b">{{ task.date_created }}</td>
             </tr>
             {% endfor %}

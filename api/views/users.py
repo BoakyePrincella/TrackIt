@@ -104,30 +104,61 @@ def signup():
     
     return render_template('users/auth/signup.html')
 
+taskss = [
+    {"status": "Not Started"},
+    {"status": "In Progress"},
+    {"status": "Finished"},
+    {"status": "In Progress"},
+    {"status": "Not Started"},
+    {"status": "Finished"}
+]
+
+
 @user_blueprint.route('/dashboard')
 def dashboard():
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render_template('users/dashboard.html')  
-    return render_template('users/base.html', content_template='users/dashboard.html')
+        
+         # Calculate counts for statuses
+        status_counts = {"Not Started": 0, "In Progress": 0, "Finished": 0}
+        for task in taskss:
+            status_counts[task["status"]] += 1
+        
+        # Dummy activities and timers data
+        activities_count = len(taskss)  # or whatever logic to get your activities
+        timers_count = 5  # example number of timers set
+
+        return render_template("users/dashboard.html", status_counts=status_counts, activities_count=activities_count, timers_count=timers_count)
+        
+        # return render_template('users/dashboard.html') 
+    status_counts = {"Not Started": 0, "In Progress": 0, "Finished": 0}
+    for task in taskss:
+        status_counts[task["status"]] += 1
+    
+    # Dummy activities and timers data
+    activities_count = len(taskss)  # or whatever logic to get your activities
+    timers_count = 5  # example number of 
+    return render_template('users/base.html', content_template='users/dashboard.html', status_counts=status_counts, activities_count=activities_count, timers_count=timers_count)
 
 @user_blueprint.route('/add-task', methods=['POST'])
 def add_task():
     from app import db
-    from api.views.db import Tasks
+    from api.views.db import Tasks, TaskStatus
     userid = session.get('user', {}).get('user_id')
     data = request.get_json()
     task_title = data.get('title')
     task_description = data.get('description')
+    tstatus = data.get('tstatus')
     if userid:
-        if task_title and task_description:
+        if task_title and task_description and isinstance(tstatus, int) :
             try:
-                new_task = Tasks(userid=userid, title=task_title, description=task_description)
+                new_task = Tasks(userid=userid, status=TaskStatus(tstatus), title=task_title, description=task_description)
                 db.session.add(new_task)
                 db.session.commit()
                 return jsonify({"message": f"Task saved. {task_title}"})
             except OperationalError:
                     return render_template("error.html", message="Unable to connect to the server, Please check your network connection and try again")
-        return jsonify({"message": "Title and description needed"})
+        # print(task_title, task_description, tstatus)
+        return jsonify({"message": "Title, description and status needed"})
     return redirect(url_for("user_bp.signin"))
 
 @user_blueprint.route('/tasks')
@@ -243,7 +274,6 @@ def start_timer():
 @user_blueprint.route('/save-timer', methods=['POST'])
 def save_timer():
     from datetime import time
-
     from api.views.db import Timers
     from app import db
     data = request.get_json()
@@ -278,7 +308,7 @@ def timer_history():
         response = requests.get(act_url)
         if response.status_code == 200:
             data = response.json()
-            return data
+            return render_template('components/timer_history.html', timer_history=data)
         return redirect(url_for("user_bp.signin"))
         
         

@@ -1,3 +1,32 @@
 {% block content %}
-    <p>Dashboard</p>
+    <!-- <p>Dashboard</p> -->
+    <div class="max-w-screen-xl mx-auto p-8">
+        <h1 class="text-3xl font-semibold mb-6">Dashboard</h1>
+
+        <!-- Task Status Pie Chart -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4">Task Status</h2>
+                <canvas id="taskStatusChart"></canvas>
+            </div>
+
+            <!-- Activities & Timers -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold mb-4">Overview</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-lg">Activities:</span>
+                        <span class="font-bold">{{ activities_count }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-lg">Timers Set:</span>
+                        <span class="font-bold">{{ timers_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}
+{% block scripts %}
+<script src="{{url_for('user_bp.static', filename='dashboard.js')}}"></script>
+{% endblock scripts %}

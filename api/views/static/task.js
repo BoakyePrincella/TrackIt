@@ -22,18 +22,23 @@ function submitTask() {
     if (taskForm) {
         const title = document.getElementById('taskTitle').value;
         const description = document.getElementById('taskDescription').value;
+        const tstatus = document.querySelector('input[name="status"]:checked').value;
 
-        if (!title && !description) {
-            document.getElementById('error_msg').textContent = "Title and description required";
+        if (!title && !description && tstatus) {
+            document.getElementById('error_msg').textContent = "Title, description and status required";
         } else if (!title) {
             document.getElementById('error_msg').textContent = "Title required";
         } else if (!description) {
             document.getElementById('error_msg').textContent = "Description required";
 
+        } else if (!tstatus) {
+            document.getElementById('error_msg').textContent = "Status required";
+
         } else {
             const data = {
                 "title": title,
-                "description": description
+                "description": description,
+                "tstatus": parseInt(tstatus)
             }
 
             fetch('/add-task', {
